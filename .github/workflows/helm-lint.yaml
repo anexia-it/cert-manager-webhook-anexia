@@ -26,10 +26,10 @@ jobs:
       - name: Run chart-testing (list-changed)
         id: list-changed
         run: |
-          changed=$(ct list-changed --chart-dirs deploy)
+          changed=$(ct list-changed --chart-dirs deploy --remote origin --target-branch main)
           if [[ -n "$changed" ]]; then
             echo "::set-output name=changed::true"
           fi
 
       - name: Run chart-testing (lint)
-        run: ct lint --chart-dirs deploy
+        run: ct lint --chart-dirs deploy --remote origin --target-branch main
