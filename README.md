@@ -1,4 +1,4 @@
-[![codecov](https://codecov.io/gh/anexia-it/cert-manager-webhook-anexia/branch/main/graph/badge.svg?token=G573SD12QG)](https://codecov.io/gh/anexia-it/cert-manager-webhook-anexia)
+[![codecov](https://codecov.io/gh/anexia-it/cert-manager-webhook-anexia/branch/main/graph/badge.svg?token=ZCJ5IRB33O)](https://codecov.io/gh/anexia-it/cert-manager-webhook-anexia)
 
 # cert-manager ACME webhook for Anexia CloudDNS
 
