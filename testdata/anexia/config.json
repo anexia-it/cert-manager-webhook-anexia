@@ -1,0 +1,5 @@
+{
+    "secretRef": "anexia-clouddns-secret",
+    "secretRefNamespace": "basic-present-record",
+    "secretKey": "anexia-token"
+}

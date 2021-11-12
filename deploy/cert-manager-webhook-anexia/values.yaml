@@ -6,16 +6,19 @@
 # solve the DNS01 challenge.
 # This group name should be **unique**, hence using your own company's domain
 # here is recommended.
-groupName: acme.mycompany.com
+groupName: acme.anexia.com
 
 certManager:
   namespace: cert-manager
   serviceAccountName: cert-manager
 
 image:
-  repository: mycompany/webhook-image
-  tag: latest
-  pullPolicy: IfNotPresent
+  repository: anx-cr.io/se-public/cert-manager-webhook-anexia
+  tag: 0.1.0
+  pullPolicy: Always
+
+rootCACertificateDuration: 43800h  # 5y
+servingCertificateDuration: 8760h  # 1y
 
 nameOverride: ""
 fullnameOverride: ""

@@ -1,7 +1,7 @@
 OS ?= $(shell go env GOOS)
 ARCH ?= $(shell go env GOARCH)
 
-IMAGE_NAME := "webhook"
+IMAGE_NAME := "anx-cr.io/se-public/cert-manager-webhook-anexia"
 IMAGE_TAG := "latest"
 
 OUT := $(shell pwd)/_out
@@ -11,7 +11,8 @@ KUBEBUILDER_VERSION=2.3.2
 $(shell mkdir -p "$(OUT)")
 
 test: _test/kubebuilder
-	go test -v .
+	go test -v . -coverprofile coverage.out
+	go tool cover -html=coverage.out -o coverage.html
 
 _test/kubebuilder:
 	curl -fsSL https://github.com/kubernetes-sigs/kubebuilder/releases/download/v$(KUBEBUILDER_VERSION)/kubebuilder_$(KUBEBUILDER_VERSION)_$(OS)_$(ARCH).tar.gz -o kubebuilder-tools.tar.gz
@@ -32,7 +33,7 @@ build:
 .PHONY: rendered-manifest.yaml
 rendered-manifest.yaml:
 	helm template \
-	    --name example-webhook \
+	    --name cert-manager-webhook-anexia \
         --set image.repository=$(IMAGE_NAME) \
         --set image.tag=$(IMAGE_TAG) \
-        deploy/example-webhook > "$(OUT)/rendered-manifest.yaml"
+        deploy/cert-manager-webhook-anexia > "$(OUT)/rendered-manifest.yaml"

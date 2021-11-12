@@ -1,0 +1,36 @@
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  repository_dispatch:
+    types: [ok-to-test-command]
+
+name: Integration tests
+
+jobs:
+  test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Insert required Anexia token into secret
+      run: sed -i 's/changemeplease/${{ secrets.ANEXIA_CLOUDDNS_TOKEN }}/g' testdata/anexia/anexia-clouddns-secret.yml
+
+    - name: Set reusable test zone name environment variable
+      run: echo "TEST_ZONE_NAME=cm-test.dev.se.anx.io." >> $GITHUB_ENV
+      
+    - name: Assemble test FQDN from commit SHA and test zone
+      run: echo "TEST_FQDN=$GITHUB_SHA.$TEST_ZONE_NAME" >> $GITHUB_ENV
+    
+    - name: Run integration tests
+      run: echo "Running tests against $TEST_FQDN" && make test
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v2
+      with:
+        fail_ci_if_error: true
+        files: ./coverage.out
+        verbose: true

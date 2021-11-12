@@ -1,0 +1,23 @@
+name: Docker image
+
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  # Build image and publish it
+  docker:
+    name: Build and deploy Docker image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Kaniko build
+        uses: aevea/action-kaniko@master
+        with:
+          registry: anx-cr.io
+          image: se-public/cert-manager-webhook-anexia
+          username: robot_se-public+github-com
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+          strip_tag_prefix: v
+          tag_with_latest: true
