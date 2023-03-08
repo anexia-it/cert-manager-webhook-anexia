@@ -1,4 +1,4 @@
-FROM golang:1.16-alpine AS build_deps
+FROM golang:1.19-alpine AS build_deps
 
 LABEL org.opencontainers.image.source="https://github.com/anexia-it/cert-manager-webhook-anexia"
 

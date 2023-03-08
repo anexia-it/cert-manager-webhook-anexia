@@ -8,18 +8,19 @@ import (
 	"strings"
 	"time"
 
-	extapi "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
+	extapi "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/klog"
 
-	"github.com/jetstack/cert-manager/pkg/acme/webhook/apis/acme/v1alpha1"
-	"github.com/jetstack/cert-manager/pkg/acme/webhook/cmd"
-	"github.com/jetstack/cert-manager/pkg/issuer/acme/dns/util"
+	"github.com/cert-manager/cert-manager/pkg/acme/webhook/apis/acme/v1alpha1"
+	"github.com/cert-manager/cert-manager/pkg/acme/webhook/cmd"
+	"github.com/cert-manager/cert-manager/pkg/issuer/acme/dns/util"
 
-	anxcloudClient "github.com/anexia-it/go-anxcloud/pkg/client"
-	anxcloudZone "github.com/anexia-it/go-anxcloud/pkg/clouddns/zone"
+	anxcloudClient "go.anx.io/go-anxcloud/pkg/client"
+	anxcloudZone "go.anx.io/go-anxcloud/pkg/clouddns/zone"
 )
 
 var GroupName = os.Getenv("GROUP_NAME")
@@ -43,7 +44,7 @@ func main() {
 
 // anexiaDNSProviderSolver implements the provider-specific logic needed to
 // 'present' an ACME challenge TXT record for your own DNS provider.
-// To do so, it must implement the `github.com/jetstack/cert-manager/pkg/acme/webhook.Solver`
+// To do so, it must implement the `github.com/cert-manager/cert-manager/pkg/acme/webhook.Solver`
 // interface.
 type anexiaDNSProviderSolver struct {
 	client *kubernetes.Clientset
