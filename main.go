@@ -8,9 +8,11 @@ import (
 	"strings"
 	"time"
 
-	extapi "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
+	"go.anx.io/go-anxcloud/pkg/api"
+	"go.anx.io/go-anxcloud/pkg/api/types"
+	"go.anx.io/go-anxcloud/pkg/client"
+	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/klog"
@@ -19,8 +21,7 @@ import (
 	"github.com/cert-manager/cert-manager/pkg/acme/webhook/cmd"
 	"github.com/cert-manager/cert-manager/pkg/issuer/acme/dns/util"
 
-	anxcloudClient "go.anx.io/go-anxcloud/pkg/client"
-	anxcloudZone "go.anx.io/go-anxcloud/pkg/clouddns/zone"
+	anxcloudDns "go.anx.io/go-anxcloud/pkg/apis/clouddns/v1"
 )
 
 var GroupName = os.Getenv("GROUP_NAME")
@@ -38,17 +39,30 @@ func main() {
 	// webhook, where the Name() method will be used to disambiguate between
 	// the different implementations.
 	cmd.RunWebhookServer(GroupName,
-		&anexiaDNSProviderSolver{},
+		&anexiaDNSProviderSolver{
+			getEngineClient: func(token string) (api.API, error) {
+				return api.NewAPI(
+					api.WithClientOptions(
+						client.TokenFromString(token),
+					),
+				)
+			},
+		},
 	)
 }
+
+//go:generate mockgen -package apimock -destination mocks/api_mock.go go.anx.io/go-anxcloud/pkg/api/types API
 
 // anexiaDNSProviderSolver implements the provider-specific logic needed to
 // 'present' an ACME challenge TXT record for your own DNS provider.
 // To do so, it must implement the `github.com/cert-manager/cert-manager/pkg/acme/webhook.Solver`
 // interface.
 type anexiaDNSProviderSolver struct {
-	client *kubernetes.Clientset
+	client          kubernetes.Interface
+	getEngineClient engineClientGetter
 }
+
+type engineClientGetter func(token string) (api.API, error)
 
 // anexiaDNSProviderConfig is a structure that is used to decode into when
 // solving a DNS01 challenge.
@@ -80,49 +94,16 @@ func (c *anexiaDNSProviderSolver) Name() string {
 	return "anexia"
 }
 
-// Find a TXT record with the given recordName and recordRData in the CloudDNS zone with the name zoneName
-func FindTXTRecord(c anxcloudClient.Client, ctx context.Context, zoneName string, recordName string, recordRData string) (*anxcloudZone.Record, error) {
-	zoneAPI := anxcloudZone.NewAPI(c)
-	records, err := zoneAPI.ListRecords(ctx, zoneName)
-
-	if err != nil {
-		return nil, err
-	}
-
-	for _, r := range records {
-		// Work around ENGSUP-5257, CloudDNS API is inserting quotes into the TXT record data
-		if strings.HasPrefix(r.RData, "\"") && strings.HasSuffix(r.RData, "\"") {
-			r.RData = strings.TrimPrefix(r.RData, "\"")
-			r.RData = strings.TrimSuffix(r.RData, "\"")
-		}
-
-		if r.Name == recordName && r.RData == recordRData && r.Type == "TXT" {
-			return &r, nil
-		}
-	}
-	return nil, nil
-}
-
 // Present is responsible for actually presenting the DNS record with the
 // DNS provider.
 // This method should tolerate being called multiple times with the same value.
 // cert-manager itself will later perform a self check to ensure that the
 // solver has correctly configured the DNS provider.
 func (c *anexiaDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) error {
-	cfg, err := loadConfig(ch.Config)
-	if err != nil {
-		return err
-	}
-
-	token, err := getToken(cfg, c, ch)
-	if err != nil {
-		klog.Error("Unable to aquire anxcloud token:", err)
-		return err
-	}
-
 	ctx, cancel := context.WithTimeout(context.Background(), Timeout)
 	defer cancel()
-	client, err := anxcloudClient.New(anxcloudClient.TokenFromString(token))
+
+	apiClient, err := getAuthorizedApiClient(c, ch, c.getEngineClient)
 	if err != nil {
 		klog.Error("Unable to set up anxcloud client:", err)
 		return err
@@ -132,7 +113,7 @@ func (c *anexiaDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) error {
 	recordName := util.UnFqdn(strings.TrimSuffix(ch.ResolvedFQDN, ch.ResolvedZone))
 
 	// Look if the needed record already exists
-	r, err := FindTXTRecord(client, ctx, zoneName, recordName, ch.Key)
+	r, err := findTXTRecord(apiClient, ctx, zoneName, recordName, ch.Key)
 	if err != nil {
 		klog.Error("Unable to search in existing records:", err)
 		return err
@@ -144,17 +125,17 @@ func (c *anexiaDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) error {
 		return nil
 	}
 
-	recordRequest := anxcloudZone.RecordRequest{
-		Name:  recordName,
-		Type:  "TXT",
-		RData: ch.Key,
-		TTL:   120,
+	record := anxcloudDns.Record{
+		Name:     recordName,
+		ZoneName: zoneName,
+		Type:     "TXT",
+		RData:    ch.Key,
+		Region:   "default",
+		TTL:      120,
 	}
 
-	_, err = anxcloudZone.NewAPI(client).NewRecord(ctx, zoneName, recordRequest)
-	if err != nil {
-		klog.Error(err)
-		klog.Error("Unable to create record, RecordRequest was:", recordRequest)
+	if err := apiClient.Create(ctx, &record); err != nil {
+		klog.Error("Unable to create record, RecordRequest was:", record)
 		return err
 	}
 
@@ -169,20 +150,10 @@ func (c *anexiaDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) error {
 // This is in order to facilitate multiple DNS validations for the same domain
 // concurrently.
 func (c *anexiaDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) error {
-	cfg, err := loadConfig(ch.Config)
-	if err != nil {
-		return err
-	}
-
-	token, err := getToken(cfg, c, ch)
-	if err != nil {
-		klog.Error("Unable to aquire anxcloud token:", err)
-		return err
-	}
-
 	ctx, cancel := context.WithTimeout(context.Background(), Timeout)
 	defer cancel()
-	client, err := anxcloudClient.New(anxcloudClient.TokenFromString(token))
+
+	apiClient, err := getAuthorizedApiClient(c, ch, c.getEngineClient)
 	if err != nil {
 		klog.Error("Unable to set up anxcloud client:", err)
 		return err
@@ -191,19 +162,23 @@ func (c *anexiaDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) error {
 	zoneName := util.UnFqdn(ch.ResolvedZone)
 	recordName := util.UnFqdn(strings.TrimSuffix(ch.ResolvedFQDN, ch.ResolvedZone))
 
-	r, err := FindTXTRecord(client, ctx, zoneName, recordName, ch.Key)
+	r, err := findTXTRecord(apiClient, ctx, zoneName, recordName, ch.Key)
 	if err != nil {
 		klog.Error("Unable to search in existing records:", err)
 		return err
 	}
 
 	if r != nil {
-		zoneAPI := anxcloudZone.NewAPI(client)
-		err := zoneAPI.DeleteRecord(ctx, util.UnFqdn(ch.ResolvedZone), r.Identifier)
-		if err != nil {
+		record := anxcloudDns.Record{
+			Identifier: r.Identifier,
+			ZoneName:   zoneName,
+		}
+
+		if err := apiClient.Destroy(ctx, &record); err != nil {
 			klog.Error("Unable to delete record:", err)
 			return err
 		}
+
 		klog.Info("Deleted a record for ", ch.ResolvedFQDN)
 		return nil
 	}
@@ -231,9 +206,43 @@ func (c *anexiaDNSProviderSolver) Initialize(kubeClientConfig *rest.Config, stop
 	return nil
 }
 
+// Find a TXT record with the given recordName and recordRData in the CloudDNS zone with the name zoneName
+func findTXTRecord(anxClient types.API, ctx context.Context, zoneName string, recordName string, recordRData string) (*anxcloudDns.Record, error) {
+	channel := make(types.ObjectChannel)
+
+	// Only return records in a certain zone, with a certain name and rdata
+	if err := anxClient.List(ctx, &anxcloudDns.Record{
+		ZoneName: zoneName,
+		Name:     recordName,
+		RData:    recordRData,
+	}, api.ObjectChannel(&channel)); err != nil {
+		return nil, fmt.Errorf("unable to list zone '%s': %v", zoneName, err)
+	}
+
+	record := anxcloudDns.Record{}
+
+	recordCount := 0
+	for res := range channel {
+		if err := res(&record); err != nil {
+			return nil, fmt.Errorf("unable to resolve object")
+		}
+		recordCount += 1
+	}
+
+	if recordCount == 0 {
+		return nil, nil
+	} else if recordCount > 1 {
+		return nil, fmt.Errorf("found more than one record")
+	}
+
+	klog.Info("Found a record ", recordName)
+
+	return &record, nil
+}
+
 // loadConfig is a small helper function that decodes JSON configuration into
 // the typed config struct.
-func loadConfig(cfgJSON *extapi.JSON) (anexiaDNSProviderConfig, error) {
+func loadConfig(cfgJSON *apiextensionsv1.JSON) (anexiaDNSProviderConfig, error) {
 	cfg := anexiaDNSProviderConfig{}
 	// handle the 'base case' where no configuration has been provided
 	if cfgJSON == nil {
@@ -246,7 +255,7 @@ func loadConfig(cfgJSON *extapi.JSON) (anexiaDNSProviderConfig, error) {
 	return cfg, nil
 }
 
-func getToken(cfg anexiaDNSProviderConfig, c *anexiaDNSProviderSolver, ch *v1alpha1.ChallengeRequest) (string, error) {
+func getToken(cfg anexiaDNSProviderConfig, c *anexiaDNSProviderSolver) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), Timeout)
 	defer cancel()
 	secret, err := c.client.CoreV1().Secrets(cfg.SecretRefNamespace).Get(ctx, cfg.SecretRef, metav1.GetOptions{})
@@ -261,4 +270,24 @@ func getToken(cfg anexiaDNSProviderConfig, c *anexiaDNSProviderSolver, ch *v1alp
 		return "", fmt.Errorf("key %s not found in secret data", cfg.SecretKey)
 	}
 	return string(token_data), nil
+}
+
+func getAuthorizedApiClient(c *anexiaDNSProviderSolver, ch *v1alpha1.ChallengeRequest, engineClient engineClientGetter) (api.API, error) {
+	cfg, err := loadConfig(ch.Config)
+	if err != nil {
+		return nil, err
+	}
+
+	token, err := getToken(cfg, c)
+	if err != nil {
+		klog.Error("Unable to acquire anxcloud token:", err)
+		return nil, err
+	}
+
+	apiClient, err := engineClient(token)
+	if err != nil {
+		return nil, err
+	}
+
+	return apiClient, nil
 }

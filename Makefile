@@ -15,7 +15,15 @@ export TEST_ASSET_KUBE_APISERVER=_test/kubebuilder/kube-apiserver
 export TEST_ASSET_KUBECTL=_test/kubebuilder/kubectl
 
 test: _test/kubebuilder
+	$(GO) test -v -tags=integration,unit . -coverprofile coverage.out
+	$(GO) tool cover -html=coverage.out -o coverage.html
+
+test-unit:
 	$(GO) test -v . -coverprofile coverage.out
+	$(GO) tool cover -html=coverage.out -o coverage.html
+
+test-integration: _test/kubebuilder
+	$(GO) test -v -tags=integration . -coverprofile coverage.out
 	$(GO) tool cover -html=coverage.out -o coverage.html
 
 _test/kubebuilder:
