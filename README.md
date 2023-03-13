@@ -10,7 +10,7 @@
 This repository provides a webhook to use cert-manager with Anexia CloudDNS.
 
 ## Requirements
--   [go](https://golang.org/) >= 1.13.0
+-   [go](https://golang.org/) >= 1.19.0
 -   [helm](https://helm.sh/) >= v3.0.0
 -   [cert-manager](https://cert-manager.io/) >= 1.6.0
 

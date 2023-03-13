@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 # Helm chart
 
+## [chart 0.1.2]
+* Version bump without functional changes
+
 ## [chart 0.1.1]
 * Version bump without functional changes
 

@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"testing"
+	"time"
 
 	"github.com/cert-manager/cert-manager/test/acme/dns"
 )
@@ -21,6 +22,9 @@ func TestRunsSuite(t *testing.T) {
 	fixture := dns.NewFixture(&anexiaDNSProviderSolver{},
 		dns.SetResolvedZone(zone),
 		dns.SetResolvedFQDN(fqdn),
+		dns.SetDNSServer("acns01.xaas.systems:53"),
+		dns.SetPollInterval(10*time.Second),
+		dns.SetPropagationLimit(10*time.Minute),
 		dns.SetAllowAmbientCredentials(false),
 		dns.SetManifestPath("testdata/anexia"),
 	)
