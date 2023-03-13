@@ -1,4 +1,9 @@
 [![codecov](https://codecov.io/gh/anexia-it/cert-manager-webhook-anexia/branch/main/graph/badge.svg?token=ZCJ5IRB33O)](https://codecov.io/gh/anexia-it/cert-manager-webhook-anexia)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/cert-manager/cert-manager/d53c0b9270f8cd90d908460d69502694e1838f5f/logo/logo-small.png" height="256" width="256" alt="cert-manager project logo" />
+</p>
+
+# ACME webhook example
 
 # cert-manager ACME webhook for Anexia CloudDNS
 
@@ -126,6 +131,11 @@ This solver implementation **must** pass the DNS01 provider conformance testing 
 See [testdata/anexia/README.md] for details on how to set up the test configuration and secret.
 You'll need an Anexia Engine token with CloudDNS access and a zone since these are integration tests
 running against the real CloudDNS API.
+
+**It is essential that you configure and run the test suite when creating a
+DNS01 webhook.**
+
+An example Go test file has been provided in [main_test.go](https://github.com/cert-manager/webhook-example/blob/master/main_test.go).
 
 You can run the test suite with:
 
