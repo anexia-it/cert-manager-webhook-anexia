@@ -11,11 +11,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 # Webhook application & image
 
+## [webhook 0.1.3]
+### Changed
+* Update dependencies
+* Switch to improved go-anxcloud CloudDNS interface
+
+### Added
+* Increased test coverage
+
 ## [webhook 0.1.0]
 ### Added
 * Implemented cert-manager ACME webhook according to the requirements given in the template
 
 # Helm chart
+## [chart 0.1.3]
+* Sync to app version 0.1.3
 
 ## [chart 0.1.2]
 * Version bump without functional changes
@@ -28,6 +38,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Helm chart to deploy the Anexia cert-manager ACME webhook
 * Role and RoleBinding to read Secrets which are needed to access the Anexia CloudDNS API
 
+[webhook 0.1.3]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/v0.1.3
 [webhook 0.1.0]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/v0.1.0
+[chart 0.1.3]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/cert-manager-webhook-anexia-0.1.3
 [chart 0.1.1]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/cert-manager-webhook-anexia-0.1.1
 [chart 0.1.0]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/cert-manager-webhook-anexia-0.1.0
