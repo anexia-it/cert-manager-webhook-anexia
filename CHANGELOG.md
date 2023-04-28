@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 # Webhook application & image
 
+## [webhook 0.1.5]
+
+### Changed
+* Move from kaniko to docker/build-push-action
+
 ## [webhook 0.1.4]
 
 ### Added
@@ -47,9 +52,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Helm chart to deploy the Anexia cert-manager ACME webhook
 * Role and RoleBinding to read Secrets which are needed to access the Anexia CloudDNS API
 
+[webhook 0.1.5]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/v0.1.5
 [webhook 0.1.4]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/v0.1.4
 [webhook 0.1.3]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/v0.1.3
 [webhook 0.1.0]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/v0.1.0
+[chart 0.1.5]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/cert-manager-webhook-anexia-0.1.5
 [chart 0.1.4]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/cert-manager-webhook-anexia-0.1.4
 [chart 0.1.3]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/cert-manager-webhook-anexia-0.1.3
 [chart 0.1.1]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/cert-manager-webhook-anexia-0.1.1
