@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 * Downgrade cert-manager to v1.9.2
+  * Newer versions of `cert-manager` using `k8s.io/client-go > 0.24` which are querying k8s resources from `v1beta3` endpoints. This breaks compatibility with `kubernetes < 1.24` 
 
 ## [webhook 0.1.3]
 ### Changed
