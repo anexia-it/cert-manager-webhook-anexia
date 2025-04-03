@@ -64,6 +64,9 @@ spec:
             secretRef: anexia-clouddns-secret # The Secret resource storing the Anexia Engine token to interact with CloudDNS
             secretRefNamespace: cert-manager # The namespace where the secret lives
             secretKey: anexia-token # The key used for the token entry in the data section of the secret
+            apiUrl: https://engine.anexia-it.com/api/clouddns/v1/zone.json # (optional) The Url to the anexia engine.
+            zoneName: se.anx.io # (optional) The zone the issuer is responsible for
+            region: 00000000-0000-0000-0000-000000000000 # (optional) The region identifier that the anexia resource is created for
 ```
 
 ### Credentials
