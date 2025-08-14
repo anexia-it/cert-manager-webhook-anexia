@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 # Webhook application & image
 
+## [webhook 1.0.0]
+
+### Changed
+* Dependency updates
+
 ## [webhook 0.1.5]
 
 ### Changed
@@ -23,7 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 * Downgrade cert-manager to v1.9.2
-  * Newer versions of `cert-manager` using `k8s.io/client-go > 0.24` which are querying k8s resources from `v1beta3` endpoints. This breaks compatibility with `kubernetes < 1.24` 
+  * Newer versions of `cert-manager` using `k8s.io/client-go > 0.24` which are querying k8s resources from `v1beta3` endpoints. This breaks compatibility with `kubernetes < 1.24`
 
 ## [webhook 0.1.3]
 ### Changed
@@ -38,6 +43,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Implemented cert-manager ACME webhook according to the requirements given in the template
 
 # Helm chart
+## [chart 1.0.0]
+* Sync to app version 1.0.0
+* Add securityContext and other similar security changes
+
 ## [chart 0.1.3]
 * Sync to app version 0.1.3
 
@@ -52,10 +61,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Helm chart to deploy the Anexia cert-manager ACME webhook
 * Role and RoleBinding to read Secrets which are needed to access the Anexia CloudDNS API
 
+[webhook 1.0.0]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/v1.0.0
 [webhook 0.1.5]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/v0.1.5
 [webhook 0.1.4]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/v0.1.4
 [webhook 0.1.3]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/v0.1.3
 [webhook 0.1.0]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/v0.1.0
+[chart 1.0.0]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/cert-manager-webhook-anexia-1.0.0
 [chart 0.1.5]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/cert-manager-webhook-anexia-0.1.5
 [chart 0.1.4]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/cert-manager-webhook-anexia-0.1.4
 [chart 0.1.3]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/cert-manager-webhook-anexia-0.1.3
