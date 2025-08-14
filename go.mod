@@ -8,7 +8,7 @@ go 1.19
 
 require (
 	github.com/cert-manager/cert-manager v1.9.2
-	github.com/golang/mock v1.5.0
+	github.com/golang/mock v1.6.0
 	github.com/onsi/ginkgo/v2 v2.9.2
 	github.com/onsi/gomega v1.27.4
 	go.anx.io/go-anxcloud v0.5.1
