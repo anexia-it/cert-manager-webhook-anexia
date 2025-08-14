@@ -1,4 +1,4 @@
-FROM golang:1.19-alpine AS build_deps
+FROM golang:1.25-alpine AS build_deps
 
 LABEL org.opencontainers.image.source="https://github.com/anexia-it/cert-manager-webhook-anexia"
 
@@ -17,7 +17,7 @@ COPY . .
 
 RUN CGO_ENABLED=0 go build -o webhook -ldflags '-w -extldflags "-static"' .
 
-FROM alpine:3.9
+FROM alpine:3.22
 
 RUN apk add --no-cache ca-certificates
 
