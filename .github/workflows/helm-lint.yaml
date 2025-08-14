@@ -14,9 +14,10 @@ jobs:
       - name: Install Helm
         uses: azure/setup-helm@v4
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5.3.0
         with:
-          python-version: '3.13'
+          python-version: '3.x'
+          check-latest: true
 
       - name: Set up chart-testing
         uses: helm/chart-testing-action@v2.7.0
@@ -24,10 +25,11 @@ jobs:
       - name: Run chart-testing (list-changed)
         id: list-changed
         run: |
-          changed=$(ct list-changed --chart-dirs deploy --remote origin --target-branch main)
+          changed=$(ct list-changed --chart-dirs deploy --target-branch ${{ github.event.repository.default_branch }})
           if [[ -n "$changed" ]]; then
-            echo "name=changed" >> $GITHUB_OUTPUT
+            echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Run chart-testing (lint)
-        run: ct lint --chart-dirs deploy --remote origin --target-branch main
+        if: steps.list-changed.outputs.changed == 'true'
+        run: ct lint --target-branch ${{ github.event.repository.default_branch }}
