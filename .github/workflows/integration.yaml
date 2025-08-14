@@ -20,7 +20,7 @@ jobs:
       run: sed -i 's/changemeplease/${{ secrets.ANEXIA_CLOUDDNS_TOKEN }}/g' testdata/anexia/anexia-clouddns-secret.yml
 
     - name: Set reusable test zone name environment variable
-      run: echo "TEST_ZONE_NAME=cert-manager-anexia-webhook-tests.test" >> $GITHUB_ENV
+      run: echo "TEST_ZONE_NAME=cert-manager-anexia-webhook-tests.test." >> $GITHUB_ENV
 
     - name: Assemble test FQDN from commit SHA and test zone
       run: echo "TEST_FQDN=$GITHUB_SHA.$TEST_ZONE_NAME" >> $GITHUB_ENV
