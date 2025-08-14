@@ -17,7 +17,9 @@ jobs:
         cache: true
 
     - name: Insert required Anexia token into secret
-      run: sed -i 's/changemeplease/${{ secrets.ANEXIA_CLOUDDNS_TOKEN }}/g' testdata/anexia/anexia-clouddns-secret.yml
+      run: sed -i "s/changemeplease/$ANEXIA_CLOUDDNS_TOKEN/g" testdata/anexia/anexia-clouddns-secret.yml
+      env:
+        ANEXIA_CLOUDDNS_TOKEN: ${{ secrets.ANEXIA_CLOUDDNS_TOKEN }}
 
     - name: Set reusable test zone name environment variable
       run: echo "TEST_ZONE_NAME=cert-manager-anexia-webhook-tests.test." >> $GITHUB_ENV
