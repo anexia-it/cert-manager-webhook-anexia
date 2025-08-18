@@ -142,6 +142,24 @@ By also setting `TEST_FQDN=specific.$TEST_ZONE_NAME`
 you can specify the exact name for which a record will be presented,
 which is useful when running concurrent integration tests.
 
+## Release workflow
+### Image
+
+To release a new version of the image:
+
+1. Create a new tag with the version.
+2. Adjust that tag in `./deploy/cert-manager-webhook-anexia/values.yaml`
+3. Set `appVersion` in `./deploy/cert-manager-webhook-anexia/Chart.yaml`
+4. Bump the chart version in the same file accordingly.
+5. Push the tag to main.
+
+(Optionally: Please improve this workflow, it's too cumbersome and error-prone.)
+
+### Helm Chart
+
+The Helm Chart is automatically updated whenever you push to `main` and there are changes of the Chart.
+That's pretty nifty, no additional things need to be done.
+
 ## Credits
 
 We would like to thank all contributors to this project, some of which are not included in the git history:
