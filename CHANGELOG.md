@@ -43,6 +43,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Implemented cert-manager ACME webhook according to the requirements given in the template
 
 # Helm chart
+
+## [chart 1.0.3]
+* Fix several deployment issues
+* Set default port to unprivileged port 8080
+
 ## [chart 1.0.0]
 * Sync to app version 1.0.0
 * Add securityContext and other similar security changes
@@ -66,6 +71,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [webhook 0.1.4]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/v0.1.4
 [webhook 0.1.3]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/v0.1.3
 [webhook 0.1.0]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/v0.1.0
+[chart 1.0.3]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/cert-manager-webhook-anexia-1.0.3
 [chart 1.0.0]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/cert-manager-webhook-anexia-1.0.0
 [chart 0.1.5]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/cert-manager-webhook-anexia-0.1.5
 [chart 0.1.4]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/cert-manager-webhook-anexia-0.1.4
