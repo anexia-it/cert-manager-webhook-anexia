@@ -6,15 +6,27 @@ IMAGE_NAME := "anx-cr.io/se-public/cert-manager-webhook-anexia"
 IMAGE_TAG := "latest"
 
 OUT := $(shell pwd)/_out
+LOCALBIN := $(shell pwd)/_test
 
-KUBE_VERSION=1.30.0
+KUBE_VERSION=1.30
 
 $(shell mkdir -p "$(OUT)")
-export TEST_ASSET_ETCD=_test/kubebuilder/etcd
-export TEST_ASSET_KUBE_APISERVER=_test/kubebuilder/kube-apiserver
-export TEST_ASSET_KUBECTL=_test/kubebuilder/kubectl
+$(shell mkdir -p "$(LOCALBIN)")
 
-test: _test/kubebuilder
+ENVTEST ?= $(LOCALBIN)/setup-envtest
+
+.PHONY: envtest
+envtest: $(ENVTEST)
+$(ENVTEST):
+	GOBIN=$(LOCALBIN) $(GO) install sigs.k8s.io/controller-runtime/tools/setup-envtest@latest
+
+ENVTEST_ASSETS = $(shell $(ENVTEST) use $(KUBE_VERSION) --bin-dir $(LOCALBIN) -p path 2>/dev/null)
+
+test: envtest
+	KUBEBUILDER_ASSETS="$(ENVTEST_ASSETS)" \
+	TEST_ASSET_ETCD="$(ENVTEST_ASSETS)/etcd" \
+	TEST_ASSET_KUBE_APISERVER="$(ENVTEST_ASSETS)/kube-apiserver" \
+	TEST_ASSET_KUBECTL="$(ENVTEST_ASSETS)/kubectl" \
 	$(GO) test -v -tags=integration,unit . -coverprofile coverage.out
 	$(GO) tool cover -html=coverage.out -o coverage.html
 
@@ -22,22 +34,18 @@ test-unit:
 	$(GO) test -v . -coverprofile coverage.out
 	$(GO) tool cover -html=coverage.out -o coverage.html
 
-test-integration: _test/kubebuilder
+test-integration: envtest
+	KUBEBUILDER_ASSETS="$(ENVTEST_ASSETS)" \
+	TEST_ASSET_ETCD="$(ENVTEST_ASSETS)/etcd" \
+	TEST_ASSET_KUBE_APISERVER="$(ENVTEST_ASSETS)/kube-apiserver" \
+	TEST_ASSET_KUBECTL="$(ENVTEST_ASSETS)/kubectl" \
 	$(GO) test -v -tags=integration . -coverprofile coverage.out
 	$(GO) tool cover -html=coverage.out -o coverage.html
-
-_test/kubebuilder:
-	curl -fsSL https://go.kubebuilder.io/test-tools/$(KUBE_VERSION)/$(OS)/$(ARCH) -o kubebuilder-tools.tar.gz
-	mkdir -p _test/kubebuilder
-	tar -xvf kubebuilder-tools.tar.gz
-	mv kubebuilder/bin/* _test/kubebuilder/
-	rm kubebuilder-tools.tar.gz
-	rm -R kubebuilder
 
 clean: clean-kubebuilder
 
 clean-kubebuilder:
-	rm -Rf _test/kubebuilder
+	rm -Rf _test
 
 build:
 	docker build -t "$(IMAGE_NAME):$(IMAGE_TAG)" .
