@@ -24,6 +24,8 @@ servingCertificateDuration: 8760h # 1y
 nameOverride: ""
 fullnameOverride: ""
 
+podLabels: {}
+
 service:
   type: ClusterIP
   port: 443
