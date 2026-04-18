@@ -20,10 +20,15 @@ envtest: $(ENVTEST)
 $(ENVTEST):
 	GOBIN=$(LOCALBIN) $(GO) install sigs.k8s.io/controller-runtime/tools/setup-envtest@latest
 
-ENVTEST_KUBEBUILDER_ASSETS = KUBEBUILDER_ASSETS="$$($(ENVTEST) use $(KUBE_VERSION) --bin-dir $(LOCALBIN) -p path)"
+define SETUP_ENVTEST_ENV
+	export KUBEBUILDER_ASSETS="$$($(ENVTEST) use $(KUBE_VERSION) --bin-dir $(LOCALBIN) -p path)" && \
+	export TEST_ASSET_ETCD="$$KUBEBUILDER_ASSETS/etcd" && \
+	export TEST_ASSET_KUBE_APISERVER="$$KUBEBUILDER_ASSETS/kube-apiserver" && \
+	export TEST_ASSET_KUBECTL="$$KUBEBUILDER_ASSETS/kubectl"
+endef
 
 test: envtest
-	$(ENVTEST_KUBEBUILDER_ASSETS) $(GO) test -v -tags=integration,unit . -coverprofile coverage.out
+	$(SETUP_ENVTEST_ENV) && $(GO) test -v -tags=integration,unit . -coverprofile coverage.out
 	$(GO) tool cover -html=coverage.out -o coverage.html
 
 test-unit:
@@ -31,7 +36,7 @@ test-unit:
 	$(GO) tool cover -html=coverage.out -o coverage.html
 
 test-integration: envtest
-	$(ENVTEST_KUBEBUILDER_ASSETS) $(GO) test -v -tags=integration . -coverprofile coverage.out
+	$(SETUP_ENVTEST_ENV) && $(GO) test -v -tags=integration . -coverprofile coverage.out
 	$(GO) tool cover -html=coverage.out -o coverage.html
 
 clean: clean-kubebuilder
