@@ -269,7 +269,7 @@ var _ = Describe("Main test", func() {
 			Expect(err).ToNot(HaveOccurred())
 		})
 
-		It("should fail to cleanup non existing record", func() {
+		It("should succeed when cleaning up non existing record", func() {
 			createSecret(k8sClient, "foo")
 
 			solver := &anexiaDNSProviderSolver{
@@ -294,7 +294,7 @@ var _ = Describe("Main test", func() {
 				},
 			})
 
-			Expect(err).To(HaveOccurred())
+			Expect(err).NotTo(HaveOccurred())
 		})
 
 		It("should fail to cleanup record due to apiClient init error", func() {

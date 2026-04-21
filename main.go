@@ -183,7 +183,8 @@ func (c *anexiaDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) error {
 		return nil
 	}
 
-	return fmt.Errorf("could not find and delete record for %s", ch.ResolvedFQDN)
+	klog.Info("No record found to delete for ", ch.ResolvedFQDN)
+	return nil
 }
 
 // Initialize will be called when the webhook first starts.
