@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/cert-manager/cert-manager/pkg/acme/webhook/apis/acme/v1alpha1"
-	"github.com/golang/mock/gomock"
+	"go.uber.org/mock/gomock"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"go.anx.io/go-anxcloud/pkg/api"
@@ -269,7 +269,7 @@ var _ = Describe("Main test", func() {
 			Expect(err).ToNot(HaveOccurred())
 		})
 
-		It("should fail to cleanup non existing record", func() {
+		It("should succeed when cleaning up non existing record", func() {
 			createSecret(k8sClient, "foo")
 
 			solver := &anexiaDNSProviderSolver{
@@ -294,7 +294,7 @@ var _ = Describe("Main test", func() {
 				},
 			})
 
-			Expect(err).To(HaveOccurred())
+			Expect(err).NotTo(HaveOccurred())
 		})
 
 		It("should fail to cleanup record due to apiClient init error", func() {
