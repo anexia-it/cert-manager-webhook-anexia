@@ -6,38 +6,43 @@ IMAGE_NAME := "anx-cr.io/se-public/cert-manager-webhook-anexia"
 IMAGE_TAG := "latest"
 
 OUT := $(shell pwd)/_out
+LOCALBIN := $(shell pwd)/_test
 
-KUBE_VERSION=1.30.0
+KUBE_VERSION=1.30
 
 $(shell mkdir -p "$(OUT)")
-export TEST_ASSET_ETCD=_test/kubebuilder/etcd
-export TEST_ASSET_KUBE_APISERVER=_test/kubebuilder/kube-apiserver
-export TEST_ASSET_KUBECTL=_test/kubebuilder/kubectl
+$(shell mkdir -p "$(LOCALBIN)")
 
-test: _test/kubebuilder
-	$(GO) test -v -tags=integration,unit . -coverprofile coverage.out
+ENVTEST ?= $(LOCALBIN)/setup-envtest
+
+.PHONY: envtest
+envtest: $(ENVTEST)
+$(ENVTEST):
+	GOBIN=$(LOCALBIN) $(GO) install sigs.k8s.io/controller-runtime/tools/setup-envtest@latest
+
+define SETUP_ENVTEST_ENV
+	export KUBEBUILDER_ASSETS="$$($(ENVTEST) use $(KUBE_VERSION) --bin-dir $(LOCALBIN) -p path)" && \
+	export TEST_ASSET_ETCD="$$KUBEBUILDER_ASSETS/etcd" && \
+	export TEST_ASSET_KUBE_APISERVER="$$KUBEBUILDER_ASSETS/kube-apiserver" && \
+	export TEST_ASSET_KUBECTL="$$KUBEBUILDER_ASSETS/kubectl"
+endef
+
+test: envtest
+	$(SETUP_ENVTEST_ENV) && $(GO) test -v -tags=integration,unit . -coverprofile coverage.out
 	$(GO) tool cover -html=coverage.out -o coverage.html
 
 test-unit:
 	$(GO) test -v . -coverprofile coverage.out
 	$(GO) tool cover -html=coverage.out -o coverage.html
 
-test-integration: _test/kubebuilder
-	$(GO) test -v -tags=integration . -coverprofile coverage.out
+test-integration: envtest
+	$(SETUP_ENVTEST_ENV) && $(GO) test -v -tags=integration . -coverprofile coverage.out
 	$(GO) tool cover -html=coverage.out -o coverage.html
-
-_test/kubebuilder:
-	curl -fsSL https://go.kubebuilder.io/test-tools/$(KUBE_VERSION)/$(OS)/$(ARCH) -o kubebuilder-tools.tar.gz
-	mkdir -p _test/kubebuilder
-	tar -xvf kubebuilder-tools.tar.gz
-	mv kubebuilder/bin/* _test/kubebuilder/
-	rm kubebuilder-tools.tar.gz
-	rm -R kubebuilder
 
 clean: clean-kubebuilder
 
 clean-kubebuilder:
-	rm -Rf _test/kubebuilder
+	rm -Rf _test
 
 build:
 	docker build -t "$(IMAGE_NAME):$(IMAGE_TAG)" .
