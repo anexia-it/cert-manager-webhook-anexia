@@ -19,6 +19,9 @@ spec:
       labels:
         app: {{ include "cert-manager-webhook-anexia.name" . }}
         release: {{ .Release.Name }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
       serviceAccountName: {{ include "cert-manager-webhook-anexia.fullname" . }}
       securityContext:
