@@ -191,8 +191,8 @@ github.com/xiang90/probing v0.0.0-20221125231312-a49e3df8f510 h1:S2dVYn90KE98chq
 github.com/xiang90/probing v0.0.0-20221125231312-a49e3df8f510/go.mod h1:UETIi67q53MR2AWcXfiuqkDkRtnGDLqkBTpCHuJHxtU=
 github.com/yuin/goldmark v1.1.27/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.2.1/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
-go.anx.io/go-anxcloud v0.8.0 h1:7ppf6dvIU8sLF7XYY3XO0eEAGvqVhmRT7Yszvdo1Pjg=
-go.anx.io/go-anxcloud v0.8.0/go.mod h1:us67RxTYY8UkTZxu9kXr2JrczduoaEZLEiq89WJQ8bg=
+go.anx.io/go-anxcloud v0.11.0 h1:OHeX4W7Glt9AsRH4IdYbboUCvYwctVbOydLpx3YI2xI=
+go.anx.io/go-anxcloud v0.11.0/go.mod h1:nhwk53AePw9CH91dAGGGzrjlpovbR8dfixtFUkHD/PA=
 go.etcd.io/bbolt v1.4.3 h1:dEadXpI6G79deX5prL3QRNP6JB8UxVkqo4UPnHaNXJo=
 go.etcd.io/bbolt v1.4.3/go.mod h1:tKQlpPaYCVFctUIgFKFnAlvbmB3tpy1vkTnDWohtc0E=
 go.etcd.io/etcd/api/v3 v3.6.5 h1:pMMc42276sgR1j1raO/Qv3QI9Af/AuyQUW6CBAWuntA=
