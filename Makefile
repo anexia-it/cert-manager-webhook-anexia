@@ -45,7 +45,7 @@ clean-kubebuilder:
 	rm -Rf _test
 
 build:
-	docker build -t "$(IMAGE_NAME):$(IMAGE_TAG)" .
+	docker build --build-arg VERSION="$(IMAGE_TAG)" -t "$(IMAGE_NAME):$(IMAGE_TAG)" .
 
 .PHONY: rendered-manifest.yaml
 rendered-manifest.yaml:

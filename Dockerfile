@@ -13,9 +13,11 @@ RUN go mod download
 
 FROM build_deps AS build
 
+ARG VERSION=dev
+
 COPY . .
 
-RUN CGO_ENABLED=0 go build -o webhook -ldflags '-w -extldflags "-static"' .
+RUN CGO_ENABLED=0 go build -o webhook -ldflags "-w -extldflags '-static' -X main.Version=${VERSION}" .
 
 FROM alpine:3.23
 
