@@ -22,7 +22,7 @@ jobs:
           registry: anx-cr.io
       - name: Docker meta
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: |
             anx-cr.io/se-public/cert-manager-webhook-anexia
