@@ -24,6 +24,9 @@ import (
 	anxcloudDns "go.anx.io/go-anxcloud/pkg/apis/clouddns/v1"
 )
 
+// Version is set at build time via -ldflags.
+var Version = "dev"
+
 var GroupName = os.Getenv("GROUP_NAME")
 
 const Timeout = 30 * time.Second
@@ -32,6 +35,8 @@ func main() {
 	if GroupName == "" {
 		panic("GROUP_NAME must be specified")
 	}
+
+	klog.Infof("cert-manager-webhook-anexia %s", Version)
 
 	// This will register our custom DNS provider with the webhook serving
 	// library, making it available as an API under the provided GroupName.
