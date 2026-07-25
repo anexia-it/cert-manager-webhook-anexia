@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 # Webhook application & image
 
+## [webhook 1.1.0]
+
+### Changed
+* Upgrade Go 1.19 to 1.26 and all major dependencies
+* Inject version at build time via ldflags
+* Update base images (golang 1.26-alpine, alpine 3.23)
+
 ## [webhook 1.0.0]
 
 ### Changed
@@ -44,6 +51,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 # Helm chart
 
+## [chart 1.0.6]
+* Update image to app version 1.1.0
+* Migrate Chart.yaml to apiVersion v2
+
 ## [chart 1.0.4] (including earlier patch releases)
 * Fix several deployment issues
 * Set default port to unprivileged port 8080
@@ -66,11 +77,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Helm chart to deploy the Anexia cert-manager ACME webhook
 * Role and RoleBinding to read Secrets which are needed to access the Anexia CloudDNS API
 
+[webhook 1.1.0]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/v1.1.0
 [webhook 1.0.0]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/v1.0.0
 [webhook 0.1.5]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/v0.1.5
 [webhook 0.1.4]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/v0.1.4
 [webhook 0.1.3]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/v0.1.3
 [webhook 0.1.0]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/v0.1.0
+[chart 1.0.6]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/cert-manager-webhook-anexia-1.0.6
 [chart 1.0.4]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/cert-manager-webhook-anexia-1.0.4
 [chart 1.0.0]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/cert-manager-webhook-anexia-1.0.0
 [chart 0.1.5]: https://github.com/anexia-it/cert-manager-webhook-anexia/releases/tag/cert-manager-webhook-anexia-0.1.5
