@@ -19,7 +19,7 @@ COPY . .
 
 RUN CGO_ENABLED=0 go build -o webhook -ldflags "-w -extldflags '-static' -X main.Version=${VERSION}" .
 
-FROM alpine:3.23
+FROM alpine:3.24
 
 RUN apk add --no-cache ca-certificates
 
