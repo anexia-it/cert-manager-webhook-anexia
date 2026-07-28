@@ -26,6 +26,8 @@ fullnameOverride: ""
 
 podLabels: {}
 
+podAnnotations: {}
+
 service:
   type: ClusterIP
   port: 443

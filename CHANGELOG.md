@@ -54,6 +54,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [chart 1.0.6]
 * Update image to app version 1.1.0
 * Migrate Chart.yaml to apiVersion v2
+* Add `podAnnotations` value to set annotations on the webhook pod
 
 ## [chart 1.0.4] (including earlier patch releases)
 * Fix several deployment issues
