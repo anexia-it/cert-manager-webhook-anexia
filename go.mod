@@ -10,7 +10,7 @@ toolchain go1.26.2
 
 require (
 	github.com/cert-manager/cert-manager v1.21.1
-	github.com/onsi/ginkgo/v2 v2.32.0
+	github.com/onsi/ginkgo/v2 v2.32.1
 	github.com/onsi/gomega v1.42.1
 	go.anx.io/go-anxcloud v0.14.5
 	go.uber.org/mock v0.6.0
