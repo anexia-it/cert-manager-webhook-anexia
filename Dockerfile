@@ -17,7 +17,7 @@ ARG VERSION=dev
 
 COPY . .
 
-RUN CGO_ENABLED=0 go build -trimpath -o webhook -ldflags "-w -extldflags '-static' -X main.Version=${VERSION}" .
+RUN CGO_ENABLED=0 go build -trimpath -o webhook -ldflags "-s -w -X main.Version=${VERSION}" .
 
 FROM alpine:3.24
 
