@@ -1,0 +1,17 @@
+# VCS
+.git
+
+# Local tooling / IDE
+.idea
+.vscode
+
+# Build/test artifacts
+_out
+_test
+coverage.html
+*.out
+*.md
+deploy
+
+# Integration test fixtures that may contain tokens
+testdata

@@ -8,7 +8,7 @@ IMAGE_TAG := "latest"
 OUT := $(shell pwd)/_out
 LOCALBIN := $(shell pwd)/_test
 
-KUBE_VERSION=1.30
+KUBE_VERSION=1.36
 
 $(shell mkdir -p "$(OUT)")
 $(shell mkdir -p "$(LOCALBIN)")
