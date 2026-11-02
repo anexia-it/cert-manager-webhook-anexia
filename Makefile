@@ -8,7 +8,7 @@ IMAGE_TAG := "latest"
 OUT := $(shell pwd)/_out
 LOCALBIN := $(shell pwd)/_test
 
-KUBE_VERSION=1.30
+KUBE_VERSION=1.36
 
 $(shell mkdir -p "$(OUT)")
 $(shell mkdir -p "$(LOCALBIN)")
@@ -26,6 +26,10 @@ define SETUP_ENVTEST_ENV
 	export TEST_ASSET_KUBE_APISERVER="$$KUBEBUILDER_ASSETS/kube-apiserver" && \
 	export TEST_ASSET_KUBECTL="$$KUBEBUILDER_ASSETS/kubectl"
 endef
+
+.PHONY: vulncheck
+vulncheck:
+	$(GO) tool govulncheck ./...
 
 test: envtest
 	$(SETUP_ENVTEST_ENV) && $(GO) test -v -tags=integration,unit . -coverprofile coverage.out

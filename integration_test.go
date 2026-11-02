@@ -3,6 +3,7 @@
 package main
 
 import (
+	"flag"
 	"os"
 	"testing"
 	"time"
@@ -10,6 +11,7 @@ import (
 	"github.com/cert-manager/cert-manager/test/acme"
 	"go.anx.io/go-anxcloud/pkg/api"
 	"go.anx.io/go-anxcloud/pkg/client"
+	"k8s.io/klog/v2"
 )
 
 var (
@@ -17,11 +19,27 @@ var (
 	fqdn = os.Getenv("TEST_FQDN")
 )
 
+func init() {
+	// Register klog flags; the cert-manager conformance fixture can't do this
+	// itself in a test binary, so its verbose logging never kicks in. Without
+	// this, verbosity stays at 0 and the useful debug/DNS logs are hidden.
+	klog.InitFlags(nil)
+	_ = flag.Set("logtostderr", "true")
+	_ = flag.Set("v", "6")
+}
+
 func TestCertManagerSuite(t *testing.T) {
 	// The manifest path should contain a file named config.json that is a
 	// snippet of valid configuration that should be included on the
 	// ChallengeRequest passed as part of the test cases.
 	//
+
+	if zone == "" {
+		t.Fatal("cannot run integration tests without env TEST_ZONE_NAME")
+	}
+	if fqdn == "" {
+		fqdn = "localtest." + zone
+	}
 
 	fixture := dns.NewFixture(&anexiaDNSProviderSolver{
 		getEngineClient: func(token string) (api.API, error) {

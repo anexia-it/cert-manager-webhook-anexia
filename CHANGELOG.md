@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 # Webhook application & image
 
+## [webhook 1.2.0]
+
+### Changed
+* Upgrade Go 1.26 to 1.27 and update major dependencies
+* Update base images (golang 1.27-alpine)
+* Align envtest Kubernetes version with the k8s.io dependencies
+
 ## [webhook 1.1.0]
 
 ### Changed

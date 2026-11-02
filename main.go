@@ -108,7 +108,7 @@ func (c *anexiaDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) error {
 	ctx, cancel := context.WithTimeout(context.Background(), Timeout)
 	defer cancel()
 
-	apiClient, err := getAuthorizedApiClient(c, ch, c.getEngineClient)
+	apiClient, err := getAuthorizedApiClient(ctx, c, ch, c.getEngineClient)
 	if err != nil {
 		klog.Error("Unable to set up anxcloud client:", err)
 		return err
@@ -158,7 +158,7 @@ func (c *anexiaDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) error {
 	ctx, cancel := context.WithTimeout(context.Background(), Timeout)
 	defer cancel()
 
-	apiClient, err := getAuthorizedApiClient(c, ch, c.getEngineClient)
+	apiClient, err := getAuthorizedApiClient(ctx, c, ch, c.getEngineClient)
 	if err != nil {
 		klog.Error("Unable to set up anxcloud client:", err)
 		return err
@@ -222,7 +222,7 @@ func findTXTRecord(anxClient types.API, ctx context.Context, zoneName string, re
 		Name:     recordName,
 		RData:    recordRData,
 	}, api.ObjectChannel(&channel)); err != nil {
-		return nil, fmt.Errorf("unable to list zone '%s': %v", zoneName, err)
+		return nil, fmt.Errorf("unable to list zone %q: %w", zoneName, err)
 	}
 
 	record := anxcloudDns.Record{}
@@ -230,9 +230,9 @@ func findTXTRecord(anxClient types.API, ctx context.Context, zoneName string, re
 	recordCount := 0
 	for res := range channel {
 		if err := res(&record); err != nil {
-			return nil, fmt.Errorf("unable to resolve object")
+			return nil, fmt.Errorf("unable to resolve object: %w", err)
 		}
-		recordCount += 1
+		recordCount++
 	}
 
 	if recordCount == 0 {
@@ -255,36 +255,34 @@ func loadConfig(cfgJSON *apiextensionsv1.JSON) (anexiaDNSProviderConfig, error) 
 		return cfg, nil
 	}
 	if err := json.Unmarshal(cfgJSON.Raw, &cfg); err != nil {
-		return cfg, fmt.Errorf("error decoding solver config: %v", err)
+		return cfg, fmt.Errorf("error decoding solver config: %w", err)
 	}
 
 	return cfg, nil
 }
 
-func getToken(cfg anexiaDNSProviderConfig, c *anexiaDNSProviderSolver) (string, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), Timeout)
-	defer cancel()
+func getToken(ctx context.Context, cfg anexiaDNSProviderConfig, c *anexiaDNSProviderSolver) (string, error) {
 	secret, err := c.client.CoreV1().Secrets(cfg.SecretRefNamespace).Get(ctx, cfg.SecretRef, metav1.GetOptions{})
 
 	if err != nil {
-		klog.Errorf("Unable to get secret %s in namespace %s: %v", cfg.SecretRef, cfg.SecretRefNamespace, err)
+		klog.Errorf("Unable to get secret %q in namespace %s: %v", cfg.SecretRef, cfg.SecretRefNamespace, err)
 		return "", err
 	}
 
-	token_data, ok := secret.Data[cfg.SecretKey]
+	tokenData, ok := secret.Data[cfg.SecretKey]
 	if !ok {
 		return "", fmt.Errorf("key %s not found in secret data", cfg.SecretKey)
 	}
-	return string(token_data), nil
+	return string(tokenData), nil
 }
 
-func getAuthorizedApiClient(c *anexiaDNSProviderSolver, ch *v1alpha1.ChallengeRequest, engineClient engineClientGetter) (api.API, error) {
+func getAuthorizedApiClient(ctx context.Context, c *anexiaDNSProviderSolver, ch *v1alpha1.ChallengeRequest, engineClient engineClientGetter) (api.API, error) {
 	cfg, err := loadConfig(ch.Config)
 	if err != nil {
 		return nil, err
 	}
 
-	token, err := getToken(cfg, c)
+	token, err := getToken(ctx, cfg, c)
 	if err != nil {
 		klog.Error("Unable to acquire anxcloud token:", err)
 		return nil, err
