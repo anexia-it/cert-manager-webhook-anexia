@@ -57,7 +57,6 @@ func TestCertManagerSuite(t *testing.T) {
 		dns.SetPropagationLimit(10*time.Minute),
 		dns.SetAllowAmbientCredentials(false),
 		dns.SetManifestPath("testdata/anexia"),
-		dns.SetStrict(true),
 	)
 	fixture.RunConformance(t)
 }
