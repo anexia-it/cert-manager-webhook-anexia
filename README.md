@@ -45,7 +45,7 @@ metadata:
 spec:
   acme:
     email: mail@example.com # REPLACE THIS WITH YOUR EMAIL!!!
-    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    server: https://acme-staging-v02.api.letsencrypt.org/directory # consider using this URL for production: https://acme-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
       name: anexia-issuer-account-key
     solvers:
