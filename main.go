@@ -108,7 +108,7 @@ func (c *anexiaDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) error {
 	ctx, cancel := context.WithTimeout(context.Background(), Timeout)
 	defer cancel()
 
-	apiClient, err := getAuthorizedApiClient(c, ch, c.getEngineClient)
+	apiClient, err := getAuthorizedApiClient(ctx, c, ch, c.getEngineClient)
 	if err != nil {
 		klog.Error("Unable to set up anxcloud client:", err)
 		return err
@@ -158,7 +158,7 @@ func (c *anexiaDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) error {
 	ctx, cancel := context.WithTimeout(context.Background(), Timeout)
 	defer cancel()
 
-	apiClient, err := getAuthorizedApiClient(c, ch, c.getEngineClient)
+	apiClient, err := getAuthorizedApiClient(ctx, c, ch, c.getEngineClient)
 	if err != nil {
 		klog.Error("Unable to set up anxcloud client:", err)
 		return err
@@ -261,9 +261,7 @@ func loadConfig(cfgJSON *apiextensionsv1.JSON) (anexiaDNSProviderConfig, error) 
 	return cfg, nil
 }
 
-func getToken(cfg anexiaDNSProviderConfig, c *anexiaDNSProviderSolver) (string, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), Timeout)
-	defer cancel()
+func getToken(ctx context.Context, cfg anexiaDNSProviderConfig, c *anexiaDNSProviderSolver) (string, error) {
 	secret, err := c.client.CoreV1().Secrets(cfg.SecretRefNamespace).Get(ctx, cfg.SecretRef, metav1.GetOptions{})
 
 	if err != nil {
@@ -278,13 +276,13 @@ func getToken(cfg anexiaDNSProviderConfig, c *anexiaDNSProviderSolver) (string, 
 	return string(tokenData), nil
 }
 
-func getAuthorizedApiClient(c *anexiaDNSProviderSolver, ch *v1alpha1.ChallengeRequest, engineClient engineClientGetter) (api.API, error) {
+func getAuthorizedApiClient(ctx context.Context, c *anexiaDNSProviderSolver, ch *v1alpha1.ChallengeRequest, engineClient engineClientGetter) (api.API, error) {
 	cfg, err := loadConfig(ch.Config)
 	if err != nil {
 		return nil, err
 	}
 
-	token, err := getToken(cfg, c)
+	token, err := getToken(ctx, cfg, c)
 	if err != nil {
 		klog.Error("Unable to acquire anxcloud token:", err)
 		return nil, err
