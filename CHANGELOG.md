@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 # Webhook application & image
 
-## [webhook 1.2.0] - Unreleased
+## [webhook 1.2.0]
 
 ### Changed
 * Upgrade Go 1.26 to 1.27 and update major dependencies
