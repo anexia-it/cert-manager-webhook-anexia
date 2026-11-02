@@ -27,6 +27,10 @@ define SETUP_ENVTEST_ENV
 	export TEST_ASSET_KUBECTL="$$KUBEBUILDER_ASSETS/kubectl"
 endef
 
+.PHONY: vulncheck
+vulncheck:
+	$(GO) tool govulncheck ./...
+
 test: envtest
 	$(SETUP_ENVTEST_ENV) && $(GO) test -v -tags=integration,unit . -coverprofile coverage.out
 	$(GO) tool cover -html=coverage.out -o coverage.html
