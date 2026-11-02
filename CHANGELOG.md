@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 # Webhook application & image
 
+## [webhook 1.2.1]
+
+### Changed
+* Go modules updated
+
 ## [webhook 1.2.0]
 
 ### Changed
