@@ -15,7 +15,7 @@ certManager:
 
 image:
   repository: anx-cr.io/se-public/cert-manager-webhook-anexia
-  tag: 1.2.0
+  tag: 1.2.0-rc1
   pullPolicy: Always
 
 rootCACertificateDuration: 43800h # 5y
