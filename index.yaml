@@ -1,0 +1,15 @@
+apiVersion: v1
+entries:
+  cert-manager-webhook-anexia:
+  - apiVersion: v2
+    appVersion: 1.2.1
+    created: "2026-11-02T14:21:40.612142616Z"
+    description: A Helm chart to deploy the Anexia CloudDNS cert-manager ACME solver
+      webhook
+    digest: f3046d2fb30ce07563d95191eb07eb185de026fac0956696418a7e816681a82c
+    name: cert-manager-webhook-anexia
+    type: application
+    urls:
+    - https://github.com/anexia-it/cert-manager-webhook-anexia/releases/download/cert-manager-webhook-anexia-1.2.1/cert-manager-webhook-anexia-1.2.1.tgz
+    version: 1.2.1
+generated: "2026-11-02T14:21:40.612147313Z"
